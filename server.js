@@ -32,6 +32,22 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// Главная страница (корневой маршрут)
+app.get('/', (req, res) => {
+  res.json({
+    service: 'SiaMatch Backend API',
+    status: 'running',
+    version: '1.0.0',
+    endpoints: {
+      health: '/api/health',
+      register: '/api/register',
+      users: '/api/users/:city',
+      swipe: '/api/swipe'
+    },
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Регистрация пользователя
 app.post('/api/register', async (req, res) => {
   const { telegramId, username, firstName, city, age, gender } = req.body;
@@ -89,13 +105,19 @@ app.post('/api/swipe', async (req, res) => {
   }
 });
 
-// Для Vercel - экспортируем app
+// Экспорт для Vercel (это должно быть в конце файла)
+module.exports = app;
+
+// Локальный запуск (только если запускаем напрямую)
 if (require.main === module) {
-  // Локальный запуск
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`🚀 Server running on port ${PORT}`);
+    console.log(`📚 API Documentation:`);
+    console.log(`   GET  /          - API info`);
+    console.log(`   GET  /api/health - Health check`);
+    console.log(`   POST /api/register - Register user`);
+    console.log(`   GET  /api/users/:city - Get users by city`);
+    console.log(`   POST /api/swipe - Swipe (like/dislike)`);
   });
 }
-
-module.exports = app;
